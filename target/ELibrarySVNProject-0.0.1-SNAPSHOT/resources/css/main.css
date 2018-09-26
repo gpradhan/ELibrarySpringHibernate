@@ -1,0 +1,18 @@
+body {
+	background-color: wheat;
+}
+
+.error {
+	color: red;
+}
+
+table {
+	width: 50%;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+
+table td {
+	border: 1px solid #565454;
+	padding: 20px;
+}

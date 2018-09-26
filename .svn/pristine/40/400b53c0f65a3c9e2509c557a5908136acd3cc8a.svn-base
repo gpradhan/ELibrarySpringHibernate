@@ -1,0 +1,139 @@
+package com.info.model;
+
+import java.sql.Date;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@Entity
+@Table(name = "NEW_E_ISSUE_BOOK")
+public class IssueBook {
+
+	@Id
+	@GeneratedValue
+	@Column(name="ID")
+	private Integer id;
+	
+	@ManyToOne(cascade=CascadeType.DETACH)
+	@JoinColumn(name="BOOK_ID")
+	private Book bookId;
+	
+	@Transient
+	private Integer bookNo;
+
+	@Column(name = "STUDENTID")
+	private String studentid;
+	
+	@Column(name = "STUDENTNAME")
+	private String studentname;
+	
+	@Column(name = "STUDENTMOBILE")
+	private long studentmobile;
+	
+	@Column(name = "ISSUEDATE")
+	private Date issueddate;
+	
+	@Column(name = "ISSUED")
+	private Integer issued;
+	
+	@Column(name = "RETURNED")
+	private Integer returned;
+
+	public IssueBook() {
+	}
+
+//	public IssueBook(Book bookNo, String studentid, String studentname, long studentmobile) {
+//		super();
+//		this.bookNo = bookNo;
+//		this.studentid = studentid;
+//		this.studentname = studentname;
+//		this.studentmobile = studentmobile;
+//	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+
+
+
+	public Book getBookId() {
+		return bookId;
+	}
+
+	public void setBookId(Book bookId) {
+		this.bookId = bookId;
+	}
+
+	
+	public Integer getIssued() {
+		return issued;
+	}
+
+	public void setIssued(Integer issued) {
+		this.issued = issued;
+	}
+
+	public Integer getReturned() {
+		return returned;
+	}
+
+	public void setReturned(Integer returned) {
+		this.returned = returned;
+	}
+
+	public Date getIssueddate() {
+		return issueddate;
+	}
+
+	public void setIssueddate(Date issueddate) {
+		this.issueddate = issueddate;
+	}
+
+	
+	public String getStudentid() {
+		return studentid;
+	}
+
+	public void setStudentid(String studentid) {
+		this.studentid = studentid;
+	}
+
+	public String getStudentname() {
+		return studentname;
+	}
+
+	public void setStudentname(String studentname) {
+		this.studentname = studentname;
+	}
+
+	public long getStudentmobile() {
+		return studentmobile;
+	}
+
+	public void setStudentmobile(long studentmobile) {
+		this.studentmobile = studentmobile;
+	}
+
+	public Integer getBookNo() {
+		return bookNo;
+	}
+
+	public void setBookNo(Integer bookNo) {
+		this.bookNo = bookNo;
+	}
+	
+	
+
+}

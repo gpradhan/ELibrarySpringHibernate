@@ -1,0 +1,145 @@
+package com.info.model;
+
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+
+@Entity
+@Table(name = "NEW_E_BOOK")
+public class Book {
+
+	@Id
+	@GeneratedValue
+	@Column(name = "ID")
+	private Integer id;
+
+	@Column(name = "NAME")
+	@Size(max = 20, min = 3)
+	@NotEmpty
+	private String name;
+	
+	@NotEmpty
+	@Column(name = "AUTHOR")
+	private String author;
+	
+	@NotEmpty
+	@Column(name = "PUBLISHER")
+	private String publisher;
+	
+	@NotNull
+	@Digits(integer=10, fraction=0)
+	@Column(name = "QUANTITY")
+	private Integer quantity;
+	
+	@Column(name = "ISSUED")
+	private Integer issued;
+	
+	@Transient
+	@OneToMany(mappedBy="bookNo")
+	private Set<IssueBook> issueBookList;
+
+	public Book() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Book(Integer id, String name, String author, String publisher, Integer quantity) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.author = author;
+		this.publisher = publisher;
+		this.quantity = quantity;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String getPublisher() {
+		return publisher;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
+
+	public Integer getIssued() {
+		return issued;
+	}
+
+	public void setIssued(Integer issued) {
+		this.issued = issued;
+	}
+
+	public Set<IssueBook> getIssueBookList() {
+		return issueBookList;
+	}
+
+	public void setIssueBookList(Set<IssueBook> issueBookList) {
+		this.issueBookList = issueBookList;
+	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	public void updateDataFromUI(Book book) {
+		setAuthor((String) checkNotNullAndUpdate(getAuthor(),book.getAuthor()));
+		setIssued((Integer) checkNotNullAndUpdate(getIssued(),book.getIssued()));
+		setName((String) checkNotNullAndUpdate(getName(), book.getName()));
+		setPublisher((String) checkNotNullAndUpdate(getPublisher(), book.getPublisher()));
+		setQuantity((Integer) checkNotNullAndUpdate(getQuantity(), book.getQuantity()));
+	}
+
+	private Object checkNotNullAndUpdate(Object o1,Object o2) {
+		if(o2!=null)
+			return o2;
+		return o1;
+	}
+	
+	
+	
+
+}

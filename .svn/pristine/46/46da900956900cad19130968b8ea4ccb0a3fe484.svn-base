@@ -1,0 +1,100 @@
+package com.info.controller;
+
+import java.util.Locale;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+import com.info.model.MyUser;
+import com.info.service.UserService;
+
+
+@Controller
+@RequestMapping("/")
+@SessionAttributes("loginSuccessMessage")
+public class UserController {
+
+	@Autowired
+	private UserService userService;
+
+//	@GetMapping("/")
+//	public String userForm(Locale locale, Model model) {
+//		model.addAttribute("myMessage", "Login page");
+//		return "index";
+//	}
+	
+	@GetMapping("/home")
+	public String home(Locale locale, Model model) {
+		model.addAttribute("myMessage", "Home page");
+		return "home";
+	}
+
+	@ModelAttribute("myUser")
+	public MyUser formBackingObject() {
+		return new MyUser();
+	}
+
+	@GetMapping("/registerUser")
+	public String addUser(Locale locale, Model model) {
+		model.addAttribute("myMessage", "Add User Form");
+		return "addUser";
+	}
+
+	@PostMapping("/saveUser")
+	public String saveUser(@ModelAttribute("myUser") @Valid MyUser myUser, BindingResult result, Model model) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("myMessage", "Add User Form");
+			return "addUser";
+		}
+		// initially book is not issued
+		userService.save(myUser);
+//		model.addAttribute("successMessage", "User registered successfully");
+		model.addAttribute("myMessage", "User registered successfully");
+		// return "redirect:/success";
+		return "index";
+	}
+	
+	@PostMapping("/librarianLogin")
+	public String login(@ModelAttribute("myUser") @Valid MyUser myUser, BindingResult result, Model model) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("error", result.getAllErrors());
+			return "librarianloginform";
+		}
+		// initially book is not issued
+		if(userService.findByUserAndPassword(myUser) != null) {
+//		model.addAttribute("loginSuccessMessage", "Welcome "+ myUser.getEmail());
+		// return "redirect:/success";
+		return "librarianHome";
+		}else {
+			model.addAttribute("error", "Please enter valid Credentials");
+			return "librarianloginform";
+		}
+	}
+
+	// @GetMapping("/book/delete/{bookId}")
+	// public String deleteBook(@PathVariable("bookId") Integer bookId, Locale
+	// locale, Model model) {
+	// userService.delete(bookId);
+	// model.addAttribute("successMessage", "Book with id=" + bookId + " deleted
+	// successfully.");
+	// return "success";
+	// }
+	
+	@GetMapping("/logoutLibrarian")
+	public String logoutForm(Locale locale, Model model) {
+		model.addAttribute("myMessage", "You have successfully logged out, Please Login again");
+		return "librarianloginform";
+	}
+
+}

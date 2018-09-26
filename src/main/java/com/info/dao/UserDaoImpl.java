@@ -1,0 +1,27 @@
+package com.info.dao;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.info.model.MyUser;
+
+@Repository("userDao")
+public class UserDaoImpl extends AbstractDao<Integer, MyUser> implements UserDao {
+
+	public MyUser findById(int id) {
+		return getByKey(id);
+	}
+
+	public MyUser findByUserAndPassword(MyUser user) {
+		Criteria crit = getSession().createCriteria(MyUser.class);
+		crit.add(Restrictions.eq("email", user.getEmail())).add(Restrictions.eq("password", user.getPassword()));
+		return (MyUser) crit.uniqueResult();
+	}
+
+	public void save(MyUser myUser) {
+		persist(myUser);
+	}
+
+
+}

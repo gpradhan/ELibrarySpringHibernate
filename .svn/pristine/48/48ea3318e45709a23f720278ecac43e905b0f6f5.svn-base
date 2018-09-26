@@ -1,0 +1,7 @@
+Size.book.name = Name must be between {2} and {1} characters.
+NotEmpty.book.author= Please enter author.
+NotEmpty.book.publisher= Please enter publisher.
+NotEmpty.book.quantity= Please enter valid quantity.
+NotEmpty.myUser.userName = Please enter user name.
+NotEmpty.myUser.password = Please enter password.
+myUser.confirmPassword = Please enter confirmPassword.

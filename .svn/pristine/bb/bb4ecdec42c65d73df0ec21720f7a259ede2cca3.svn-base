@@ -1,0 +1,172 @@
+package com.info.controller;
+
+import java.util.List;
+import java.util.Locale;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.info.model.Book;
+import com.info.model.IssueBook;
+import com.info.service.BookService;
+
+@RestController
+@RequestMapping("api//books")
+public class BookRESTController {
+
+	@Autowired
+	private BookService bookService;
+
+	// @GetMapping("/")
+	// public String bookForm(Locale locale, Model model) {
+	// model.addAttribute("myMessage", "Landing page");
+	// return "index";
+	// }
+
+	@ModelAttribute("book")
+	public Book formBackingObject() {
+		return new Book();
+	}
+
+	@GetMapping("/addBook")
+	public String addBook(Locale locale, Model model) {
+		model.addAttribute("myMessage", "Add Boom Form");
+		return "addBook";
+	}
+
+	@PostMapping("/saveBook")
+	public String saveBook(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("myMessage", "Add Book Form");
+			return "addBook";
+		}
+		// initially book is not issued
+		book.setIssued(0);
+		bookService.save(book);
+		model.addAttribute("successMessage", "Book added successfully");
+		// return "redirect:/success";
+		return "success";
+	}
+
+	@GetMapping("/viewAllBooks")
+	public List<Book> viewAllBooks(Locale locale, Model model) {
+		return bookService.bookList();
+	}
+
+	@GetMapping("/delete/{bookId}")
+	public String deleteBook(@PathVariable("bookId") Integer bookId, Locale locale, Model model) {
+		bookService.delete(bookId);
+		model.addAttribute("successMessage", "Book with id=" + bookId + " deleted successfully.");
+		return "success";
+	}
+
+	@RequestMapping(value = "/deleteBook", method = RequestMethod.POST)
+	public String deleteBook(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
+		if (bookService.getBookById(book.getId()) != null) {
+			System.out.println("book ");
+			bookService.delete(book.getId());
+		}
+		model.addAttribute("successMessage", "Book with id=" + book.getId() + " deleted successfully.");
+		return "success";
+
+	}
+
+	
+	
+	@RequestMapping(value = "/updateBookForm", method = RequestMethod.POST)
+	public String updateBookForm(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
+		// model.addAttribute("book",bookService.getBookById(book.getId()));
+		model.addAttribute("sourceBook", book);
+		model.addAttribute("myMessage", "update Book");
+		return "updateBookForm";
+
+	}
+
+	@RequestMapping(value = "/updateBook", method = RequestMethod.POST)
+	public String updateBook(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
+		
+		bookService.update(book);
+		model.addAttribute("successMessage", "Book with id=" + book.getId() + " updated successfully.");
+		return "updateBookForm";
+
+	}
+	
+//	@GetMapping("/issueBook")
+//	public String issueBook(Locale locale, Model model) {
+//		model.addAttribute("myMessage", "Issue Book Form");
+//		return "issueBook";
+//	}
+	
+	@GetMapping("/issueBook")
+	public ModelAndView issueBook(Locale locale) {
+		ModelAndView mav = new ModelAndView("issueBook");
+		  IssueBook issueBook = new IssueBook();
+		  mav.getModelMap().put("issueBook", issueBook);
+		mav.getModelMap().put("myMessage", "Issue Book Form");
+		mav.getModelMap().put("bookList", bookService.bookList());
+		mav.setViewName("issueBook");
+		return mav;
+	}
+
+	@PostMapping("/issueBook")
+	public String saveIssueBook(@ModelAttribute("issueBook") @Valid IssueBook issueBook, BindingResult result, Model model) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("myMessage", "Issue Book Form");
+//			model.addAttribute("errorMessage", result.getAllErrors());
+			model.addAttribute("bookList", bookService.bookList());
+			return "issueBook";
+		}
+		// initially book is not issued
+		bookService.issueBook(issueBook);
+		model.addAttribute("successMessage", "Book added successfully");
+		// return "redirect:/success";
+		return "success";
+	}
+
+	@GetMapping("/viewAllIssuedBooks")
+	public String viewAllIssuedBooks(Locale locale, Model model) {
+		model.addAttribute("issueBookList", bookService.issueBookList());
+		return "viewAllIssuedBooks";
+	}
+	
+	@GetMapping("/returnBook")
+	public ModelAndView returnBook(Locale locale) {
+		ModelAndView mav = new ModelAndView("issueBook");
+		  IssueBook issueBook = new IssueBook();
+		  mav.getModelMap().put("issueBook", issueBook);
+		mav.getModelMap().put("myMessage", "Return Book Form");
+		mav.getModelMap().put("bookList", bookService.bookList());
+		mav.setViewName("returnBook");
+		return mav;
+	}
+	
+	@PostMapping("/returnBook")
+	public String savereturnBook(@ModelAttribute("issueBook") @Valid IssueBook issueBook, BindingResult result, Model model) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("myMessage", "Return Book Form");
+//			model.addAttribute("errorMessage", result.getAllErrors());
+			model.addAttribute("bookList", bookService.bookList());
+			return "returnBook";
+		}
+		// initially book is not issued
+		bookService.returnBook(issueBook);
+		model.addAttribute("successMessage", "Book returned successfully");
+		// return "redirect:/success";
+		return "success";
+	}
+
+}
