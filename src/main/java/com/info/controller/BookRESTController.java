@@ -8,10 +8,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,54 +26,39 @@ import com.info.model.IssueBook;
 import com.info.service.BookService;
 
 @RestController
-@RequestMapping("api//books")
+@RequestMapping("api")
 public class BookRESTController {
 
 	@Autowired
 	private BookService bookService;
 
-	// @GetMapping("/")
-	// public String bookForm(Locale locale, Model model) {
-	// model.addAttribute("myMessage", "Landing page");
-	// return "index";
-	// }
 
 	@ModelAttribute("book")
 	public Book formBackingObject() {
 		return new Book();
 	}
 
-	@GetMapping("/addBook")
-	public String addBook(Locale locale, Model model) {
-		model.addAttribute("myMessage", "Add Boom Form");
-		return "addBook";
-	}
-
-	@PostMapping("/saveBook")
-	public String saveBook(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
-
-		if (result.hasErrors()) {
-			model.addAttribute("myMessage", "Add Book Form");
-			return "addBook";
-		}
-		// initially book is not issued
+	@PostMapping("/book")
+	public String addBook(@RequestBody Book book) {
 		book.setIssued(0);
 		bookService.save(book);
-		model.addAttribute("successMessage", "Book added successfully");
-		// return "redirect:/success";
-		return "success";
+		return "Book added successfully";
 	}
 
-	@GetMapping("/viewAllBooks")
+	@GetMapping("/book/{bookId}")
+	public Book viewAllBooks(@PathVariable Integer bookId) {
+		return bookService.getBookById(bookId);
+	}
+	
+	@GetMapping("/books")
 	public List<Book> viewAllBooks(Locale locale, Model model) {
 		return bookService.bookList();
 	}
 
-	@GetMapping("/delete/{bookId}")
-	public String deleteBook(@PathVariable("bookId") Integer bookId, Locale locale, Model model) {
+	@DeleteMapping("/book/{bookId}")
+	public String deleteBook(@PathVariable("bookId") Integer bookId) {
 		bookService.delete(bookId);
-		model.addAttribute("successMessage", "Book with id=" + bookId + " deleted successfully.");
-		return "success";
+		return "Book with id=\" + bookId + \" deleted successfully.";
 	}
 
 	@RequestMapping(value = "/deleteBook", method = RequestMethod.POST)
@@ -85,29 +74,19 @@ public class BookRESTController {
 
 	
 	
-	@RequestMapping(value = "/updateBookForm", method = RequestMethod.POST)
-	public String updateBookForm(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
-		// model.addAttribute("book",bookService.getBookById(book.getId()));
-		model.addAttribute("sourceBook", book);
-		model.addAttribute("myMessage", "update Book");
-		return "updateBookForm";
-
-	}
-
-	@RequestMapping(value = "/updateBook", method = RequestMethod.POST)
-	public String updateBook(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
-		
+	@PutMapping(value = "/book")
+	public Book updateBookByPut(@ModelAttribute("book") @Valid Book book) {
 		bookService.update(book);
-		model.addAttribute("successMessage", "Book with id=" + book.getId() + " updated successfully.");
-		return "updateBookForm";
+		return book;
 
 	}
 	
-//	@GetMapping("/issueBook")
-//	public String issueBook(Locale locale, Model model) {
-//		model.addAttribute("myMessage", "Issue Book Form");
-//		return "issueBook";
-//	}
+	@PatchMapping(value = "/book")
+	public Book updateBookByPatch(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
+		bookService.update(book);
+		return book;
+
+	}
 	
 	@GetMapping("/issueBook")
 	public ModelAndView issueBook(Locale locale) {
@@ -125,7 +104,6 @@ public class BookRESTController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("myMessage", "Issue Book Form");
-//			model.addAttribute("errorMessage", result.getAllErrors());
 			model.addAttribute("bookList", bookService.bookList());
 			return "issueBook";
 		}
